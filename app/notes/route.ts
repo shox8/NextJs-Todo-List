@@ -1,9 +1,8 @@
-import { NextRequest } from "next/server";
 import { json } from "../_libs";
 
 export let notes: any[] = [];
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   return new Response(json(notes));
 }
 
