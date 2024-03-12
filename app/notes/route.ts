@@ -7,7 +7,7 @@ export async function GET(_request: NextRequest) {
   return new Response(json(notes));
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const data = await request.json();
   notes.push(data);
   return new Response(json(data));
