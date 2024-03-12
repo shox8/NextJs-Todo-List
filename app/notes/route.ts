@@ -1,13 +1,14 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest } from "next/server";
 import { json } from "../_libs";
 
 export let notes: any[] = [];
 
-export async function GET(_request: NextApiRequest) {
+export async function GET(_request: NextRequest) {
   return new Response(json(notes));
 }
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-  notes.push(req.body);
-  return res.status(201).json(req.body);
+export async function POST(request: Request) {
+  const data = await request.json();
+  notes.push(data);
+  return new Response(json(data));
 }
