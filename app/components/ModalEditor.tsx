@@ -9,11 +9,11 @@ import {
   Input,
   Textarea,
 } from "@nextui-org/react";
-import axios from "axios";
 
 interface ModalEditorProps {
   isOpen: boolean;
   note: any;
+  notes: any[];
   onClose: () => void;
   setNote: React.Dispatch<React.SetStateAction<object[]>>;
   setNotes: React.Dispatch<React.SetStateAction<object[]>>;
@@ -22,14 +22,21 @@ interface ModalEditorProps {
 const ModalEditor: React.FC<ModalEditorProps> = ({
   isOpen,
   note,
+  notes,
   onClose,
   setNote,
   setNotes,
 }) => {
   const editNote = () => {
-    axios.patch(`/notes/${note.id}`, note).then((res) => {
-      setNotes((p) => [...p, res.data]);
-      onClose();
+    notes.map((item, index) => {
+      if (item.id === note.id) {
+        setNotes((prevNotes) => {
+          const newNotes = [...prevNotes];
+          newNotes.splice(index, 1, note);
+          return newNotes;
+        });
+        onClose()
+      }
     });
   };
 

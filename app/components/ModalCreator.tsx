@@ -10,7 +10,6 @@ import {
   Input,
   Textarea,
 } from "@nextui-org/react";
-import axios from "axios";
 import { $getId } from "dollar-kit";
 
 interface ModalCreatorProps {
@@ -27,10 +26,9 @@ const ModalCreator: React.FC<ModalCreatorProps> = ({
   const [note, setNote] = useState<object>({});
 
   const createNote = () => {
-    axios.post("/notes", { ...note, id: $getId(10) }).then((res) => {
-      setNotes((p) => [...p, res.data]);
-      onClose();
-    });
+    const data = { ...note, id: $getId(10) };
+    setNotes((p) => [...p, data]);
+    onClose();
   };
 
   const setting = (key: string, e: React.ChangeEvent<HTMLInputElement>) => {

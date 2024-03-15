@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Button,
   Card,
@@ -11,20 +11,19 @@ import {
   DropdownTrigger,
 } from "@nextui-org/react";
 import ModalCreator from "./components/ModalCreator";
-import axios from "axios";
 import ModalEditor from "./components/ModalEditor";
+
+interface Note {
+  id: string;
+  title: string;
+  note: string;
+}
 
 export default function Home() {
   const [isCreatorOpen, setCreatorOpen] = useState<boolean>(false);
   const [isEditorOpen, setEditorOpen] = useState<boolean>(false);
   const [notes, setNotes] = useState<any[]>([]);
-  const [note, setNote] = useState<object>({});
-
-  useEffect(() => {
-    axios.get("/notes").then((res) => {
-      setNotes(res.data);
-    });
-  });
+  const [note, setNote] = useState<Note | object>({});
 
   const toggleCreatorModal = () => setCreatorOpen(!isCreatorOpen);
 
@@ -36,13 +35,7 @@ export default function Home() {
   };
 
   const remove = (id: string) => {
-    axios.delete(`/notes/${id}`).then((res) => {
-      notes.map((item, index) => {
-        if (item.id === res.data) {
-          setNotes((p) => p.splice(index, 1));
-        }
-      });
-    });
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
   };
 
   return (
@@ -55,6 +48,7 @@ export default function Home() {
       <ModalEditor
         isOpen={isEditorOpen}
         note={note}
+        notes={notes}
         onClose={toggleEditorModal}
         setNote={setNote}
         setNotes={setNotes}
@@ -65,10 +59,10 @@ export default function Home() {
           + Add New Note
         </Button>
       </div>
-      <div className="inline-grid grid-cols-4 gap-4 p-4">
+      <div className="grid md:grid-cols-3 gap-4 p-4">
         {notes.map((item, index) => (
           <Card key={index}>
-            <CardHeader className="text-xl font-black flex justify-between">
+            <CardHeader className="text-xl font-bold flex justify-between">
               {item.title}
               <Dropdown>
                 <DropdownTrigger>
@@ -77,11 +71,14 @@ export default function Home() {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Dropdown Variants">
-                  <DropdownItem key="edit" onClick={() => startEdit(item)}>
+                  <DropdownItem
+                    key={`edit-${item.id}`}
+                    onClick={() => startEdit(item)}
+                  >
                     Edit
                   </DropdownItem>
                   <DropdownItem
-                    key="delete"
+                    key={`delete-${item.id}`}
                     className="text-danger"
                     color="danger"
                     onClick={() => remove(item.id)}
